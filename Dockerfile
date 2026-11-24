@@ -19,7 +19,15 @@ RUN git clone -q --depth 1 --branch "$NOOP_VERSION" https://github.com/huacnlee/
  && rm -rf /app/.git \
  && cd /app && bun install --frozen-lockfile \
  && bun -e 'import { ensureWebClient } from "/app/src/webclient.ts"; process.exit((await ensureWebClient()) ? 0 : 1)' \
+ && cd /app/app/dist/web \
+ && rm -f .release noop/index.html.br noop/index.html.gz \
  && chmod -R a+rwX /app/app/dist
+# Sign in with the app password instead of email (there's no Worker to send codes). With no .release record,
+# Noop keeps this web client instead of replacing it with a newer download.
+COPY token-login.html /tmp/token-login.html
+COPY signin.html /app/app/dist/web/noop/signin.html
+RUN node -e 'const fs=require("fs"),f="/app/app/dist/web/noop/index.html";let s=fs.readFileSync(f,"utf8");const i=s.indexOf("<head>")+6;if(i<6)process.exit(1);fs.writeFileSync(f,s.slice(0,i)+"\n"+fs.readFileSync("/tmp/token-login.html","utf8")+s.slice(i))' \
+ && rm /tmp/token-login.html
 
 COPY entrypoint.sh /usr/local/bin/noop-entrypoint
 RUN chmod 755 /usr/local/bin/noop-entrypoint

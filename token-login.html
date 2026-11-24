@@ -1,0 +1,19 @@
+<script>
+/* Added by noop-modc: this Noop runs without its Cloudflare Worker, so there's no email sign-in. It uses the
+   app's password instead (Omarchy Server shows it on Noop's page): /signin.html, or open /?token=<password>. */
+(function () {
+  var P = "nsh:dev.noop.app:", K = P + "hub.token", U = P + "hub.url";
+  try {
+    var q = new URLSearchParams(location.search), t = q.get("token");
+    if (t) { q.delete("token"); history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "") + location.hash); }
+    t = t || localStorage.getItem(K);
+    var x = new XMLHttpRequest(); x.open("GET", "/api/status", false);
+    if (t) x.setRequestHeader("Authorization", "Bearer " + t);
+    x.send();
+    if (t && x.status === 200) { localStorage.setItem(K, t); localStorage.setItem(U, location.origin); return; }
+    localStorage.removeItem(K);
+  } catch (e) { return; }
+  window.stop();
+  location.replace("/signin.html");
+})();
+</script>

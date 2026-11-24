@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in to Noop</title>
+<style>
+  :root { --bg: #fafafa; --fg: #111; --muted: #666; --field: #fff; --line: #ccc; --btn: #111; --btn-fg: #fff; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #111; --fg: #eee; --muted: #999; --field: #1b1b1b; --line: #333; --btn: #eee; --btn-fg: #111; } }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--bg); color: var(--fg); font: 15px system-ui, sans-serif; }
+  form { width: min(340px, calc(100vw - 32px)); display: grid; gap: 12px; text-align: center; }
+  img { width: 48px; height: 48px; margin: 0 auto; border-radius: 12px; }
+  h1 { font-size: 22px; margin: 0; }
+  p { margin: 0; color: var(--muted); font-size: 13px; }
+  input { padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--field); color: var(--fg); font: inherit; }
+  button { padding: 10px; border: 0; border-radius: 8px; background: var(--btn); color: var(--btn-fg); font: inherit; font-weight: 600; cursor: pointer; }
+  #e { color: #d44; min-height: 1em; }
+</style>
+</head>
+<body>
+<form id="f">
+  <img src="/icons/192.png" alt="" onerror="this.remove()">
+  <h1>Sign in to Noop</h1>
+  <p>Enter the password shown on Noop's page in Omarchy Server.</p>
+  <input name="p" type="password" autocomplete="current-password" placeholder="Password" autofocus required>
+  <button>Sign in</button>
+  <p id="e"></p>
+</form>
+<script>
+  document.getElementById("f").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const t = ev.target.p.value.trim(), e = document.getElementById("e");
+    e.textContent = "";
+    try {
+      const r = await fetch("/api/status", { headers: { Authorization: "Bearer " + t } });
+      if (!r.ok) { e.textContent = "That password didn't work."; return; }
+      localStorage.setItem("nsh:dev.noop.app:hub.token", t);
+      localStorage.setItem("nsh:dev.noop.app:hub.url", location.origin);
+      location.replace("/");
+    } catch { e.textContent = "Couldn't reach Noop. Is it running?"; }
+  });
+</script>
+</body>
+</html>

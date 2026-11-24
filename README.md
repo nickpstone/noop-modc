@@ -9,7 +9,13 @@ Claude Code, Codex and `gh` are included. Sign them in from Noop's Settings › 
 `claude setup-token` token).
 
 ```
-podman build -t ghcr.io/nickpstone/noop:1.0.9 .
+podman build -t ghcr.io/nickpstone/noop:1.0.9-1 .
 ```
 
 Noop's own git self-update is off inside the image. To update, bump `NOOP_VERSION` and build a new tag.
+
+## Signing in
+
+Noop's web app normally signs in by email through the Worker, which this image doesn't run. The image adds
+`/signin.html`, which asks for the app's password (`NOOP_TOKEN`) and saves it where the web app looks. Opening
+`/?token=<password>` does the same in one step.
