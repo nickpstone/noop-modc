@@ -1,6 +1,7 @@
 # Noop (https://github.com/huacnlee/noop) packaged for Omarchy Server / Modc App Store.
 # Runs Noop as a standalone primary with no Cloudflare: data stays in /data, web chat on :8787.
-FROM docker.io/oven/bun:1.4.5
+FROM docker.io/node:22-trixie-slim
+COPY --from=docker.io/oven/bun:1.4.5 /usr/local/bin/bun /usr/local/bin/bun
 
 ARG NOOP_VERSION=v1.0.9
 LABEL org.opencontainers.image.source=https://github.com/nickpstone/noop-modc \
@@ -8,7 +9,7 @@ LABEL org.opencontainers.image.source=https://github.com/nickpstone/noop-modc \
       org.opencontainers.image.licenses=MIT
 
 RUN apt-get update \
- && apt-get install -y --no-install-recommends git gh nodejs npm ca-certificates curl tini procps ripgrep openssh-client \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git gh ca-certificates curl tini procps ripgrep openssh-client \
  && rm -rf /var/lib/apt/lists/* \
  && npm install -g @anthropic-ai/claude-code @openai/codex \
  && npm cache clean --force
