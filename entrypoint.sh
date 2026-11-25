@@ -23,6 +23,9 @@ TOML
 if [ ! -f "$NOOP_HOME/data/config.toml" ]; then
   echo "noop: first start, setting up a local primary in $NOOP_HOME"
   bun /app/src/cli.ts init --primary </dev/null
+  # Noop writes in Simplified Chinese unless [owner] language is "en"; the web app's language menu doesn't change it.
+  # Default to NOOP_LANGUAGE (en); change it later in config.toml.
+  sed -i "/^\[owner\]/a language = \"${NOOP_LANGUAGE:-en}\"" "$NOOP_HOME/data/config.toml"
 fi
 
 exec bun /app/src/cli.ts daemon

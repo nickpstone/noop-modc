@@ -9,7 +9,7 @@ Claude Code, Codex and `gh` are included. Sign them in from Noop's Settings › 
 `claude setup-token` token).
 
 ```
-podman build -t ghcr.io/nickpstone/noop:1.0.9-1 .
+podman build -t ghcr.io/nickpstone/noop:1.0.9-2 .
 ```
 
 Noop's own git self-update is off inside the image. To update, bump `NOOP_VERSION` and build a new tag.
@@ -19,3 +19,9 @@ Noop's own git self-update is off inside the image. To update, bump `NOOP_VERSIO
 Noop's web app normally signs in by email through the Worker, which this image doesn't run. The image adds
 `/signin.html`, which asks for the app's password (`NOOP_TOKEN`) and saves it where the web app looks. Opening
 `/?token=<password>` does the same in one step.
+
+## Language
+
+Noop writes its messages and agent replies in Simplified Chinese unless `[owner] language = "en"` is set in
+`config.toml`. The web app's language menu only changes the app's own labels. On first start this image sets it
+to `NOOP_LANGUAGE`, which defaults to `en`.
